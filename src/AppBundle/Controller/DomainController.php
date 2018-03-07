@@ -36,7 +36,7 @@ class DomainController extends Controller
             }
         }
         else {
-            return new JsonResponse(array('code' => '400', 'message' => 'Bad Request'), 400);
+            return new JsonResponse(array('code' => '400', 'message' => 'Bad Request', 'datas' => array()), 400);
         }
 
         // Récupération du view handler

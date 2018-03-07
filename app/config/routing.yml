@@ -1,3 +1,7 @@
 app:
     resource: '@AppBundle/Controller/'
     type: annotation
+
+domains:
+    type:     rest
+    resource: AppBundle\Controller\DomainController

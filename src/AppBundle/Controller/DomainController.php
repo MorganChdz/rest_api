@@ -4,6 +4,9 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use FOS\RestBundle\Controller\Annotations as Rest; // alias pour toutes les annotations
+use FOS\RestBundle\View\View;
+use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
@@ -11,8 +14,8 @@ use AppBundle\Entity\Domain;
 class DomainController extends Controller
 {
     /**
-     * @Route("/api/domains.json", name="domain_list")
-     * @Method({"GET"})
+     * @Rest\View()
+     * @Rest\Get("/api/domains.json")
      */
     public function getDomainAction(Request $request)
     {
@@ -30,6 +33,16 @@ class DomainController extends Controller
                'description' => $_domain->getDescription(),
             ];
         }
+
+        // Récupération du view handler
+        //$viewHandler = $this->get('fos_rest.view_handler');
+
+        // Création d'une vue FOSRestBundle
+        //$view = View::create($formatted);
+        //$view->setFormat('json');
+
+        // Gestion de la réponse
+        //return $domain;
 
         return new JsonResponse(array('code' => '200', 'message' => 'success', 'datas' => $formatted));
     }

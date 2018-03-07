@@ -15,23 +15,28 @@ class DomainController extends Controller
 {
     /**
      * @Rest\View()
-     * @Rest\Get("/api/domains.json")
+     * @Rest\Get("/api/domains{extension}")
      */
-    public function getDomainAction(Request $request)
+    public function getDomainAction(Request $request, $extension = '')
     {
-        $domain = $this->get('doctrine.orm.entity_manager')
-                ->getRepository('AppBundle:Domain')
-                ->findAll();
-        /* @var $domain Domain[] */
+        if($extension=='.json'){
+            $domain = $this->get('doctrine.orm.entity_manager')
+                    ->getRepository('AppBundle:Domain')
+                    ->findAll();
+            /* @var $domain Domain[] */
 
-        $formatted = [];
-        foreach ($domain as $_domain) {
-            $formatted[] = [
-               'id' => $_domain->getId(),
-               'slug' => $_domain->getSlug(),
-                'name' => $_domain->getName(),
-               'description' => $_domain->getDescription(),
-            ];
+            $formatted = [];
+            foreach ($domain as $_domain) {
+                $formatted[] = [
+                   'id' => $_domain->getId(),
+                   'slug' => $_domain->getSlug(),
+                    'name' => $_domain->getName(),
+                   'description' => $_domain->getDescription(),
+                ];
+            }
+        }
+        else {
+            return new JsonResponse(array('code' => '400', 'message' => 'Bad Request'));
         }
 
         // Récupération du view handler

@@ -36,6 +36,12 @@ class Domain
      */
     protected $slug;
 
+    /**
+     * @ORM\Column(type="datetime", name="created_at")
+
+     */
+    protected $createdAt;
+
     public function getId()
     {
         return $this->id;
@@ -59,6 +65,11 @@ class Domain
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 
     public function setId($id)
@@ -88,6 +99,12 @@ class Domain
     public function setSlug($slug)
     {
         $this->slug = $slug;
+        return $this;
+    }
+
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 }

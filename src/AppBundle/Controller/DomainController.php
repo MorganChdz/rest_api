@@ -49,6 +49,6 @@ class DomainController extends Controller
         // Gestion de la réponse
         //return $domain;
 
-        return new JsonResponse(array('code' => '200', 'message' => 'success', 'datas' => $formatted));
+        return new JsonResponse(array('code' => 200, 'message' => 'success', 'datas' => $formatted));
     }
 }

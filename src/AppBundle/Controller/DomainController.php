@@ -104,11 +104,25 @@ class DomainController extends FOSRestController
     */
    public function getDomainAction($domain)
    {
-  $data = array(
+           $formatted = [];
+            foreach ($domain as $_domain) {
+                $formatted[] = [
+                   'id' => $_domain->getId(),
+                   'slug' => $_domain->getSlug(),
+                    'name' => $_domain->getName(),
+                   'description' => $_domain->getDescription(),
+                   'creators' => $_domain->getUser(),
+                   'created_at'=> $_domain->getCreatedAt(),
+                ];
+            }
+
+        $data = array(
            "code" => 200,
            "message" => "success",
-           "datas" => $domain
+           "datas" => $formatted
        );
+
+
        $view = $this->view($data, 200);
        return $this->handleView($view);   
 }

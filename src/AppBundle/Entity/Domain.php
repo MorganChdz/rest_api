@@ -53,17 +53,7 @@ class Domain
     public function __construct()
     {
         $this->user = new ArrayCollection();
-         $this->domain_lang = new ArrayCollection();
     }
-     /**
-    * @ORM\ManyToMany(targetEntity="AppBundle\Entity\DomainLanguage")
-    * @ORM\JoinTable(
-    *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-    *      inverseJoinColumns={@ORM\JoinColumn(name="lang_id", referencedColumnName="code")}
-    * )    
-    */
-    protected $domain_lang;
-
 
    
 
@@ -104,10 +94,7 @@ class Domain
         return $this->user;
     }
 
-        public function getDomainLang()
-    {
-        return $this->domain_lang;
-    }
+     
 
     public function setId($id)
     {
@@ -148,12 +135,6 @@ class Domain
         public function setUser($user)
     {
         $this->user = $user;
-        return $this;
-    }
-
-    public function setDomainLang($domain_lang)
-    {
-        $this->domain_lang = $domain_lang;
         return $this;
     }
 }

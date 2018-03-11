@@ -45,15 +45,23 @@ class Domain
     protected $createdAt;
     
     /**
-     * @ORM\OneToMany(targetEntity="User", mappedBy="domains")
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @var User[]
      */
-    protected $users;
+    protected $user;
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->user = new ArrayCollection();
+         $this->domain_lang = new ArrayCollection();
     }
+        /**
+     * @ORM\ManyToMany(targetEntity="DomainLanguage", inversedBy="domain_id")
+     * @var DomainLanguage[]
+     */
+    protected $domain_lang;
+
+
    
 
 
@@ -88,9 +96,14 @@ class Domain
     }
 
 
-    public function getUsers()
+    public function getUser()
     {
-        return $this->users;
+        return $this->user;
+    }
+
+        public function getDomainLang()
+    {
+        return $this->domain_lang;
     }
 
     public function setId($id)
@@ -129,9 +142,15 @@ class Domain
         return $this;
     }
 
-        public function setUsers($users)
+        public function setUser($user)
     {
-        $this->users = $users;
+        $this->user = $user;
+        return $this;
+    }
+
+    public function setDomainLang($domain_lang)
+    {
+        $this->domain_lang = $domain_lang;
         return $this;
     }
 }

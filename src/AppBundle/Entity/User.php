@@ -37,11 +37,7 @@ class User
 
     protected $password;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="users")
-     * @var Domain
-     */
-    protected $domains;
+
 
     public function getId()
     {

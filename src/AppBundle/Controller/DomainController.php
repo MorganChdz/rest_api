@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class DomainController extends Controller
 {
@@ -51,36 +52,43 @@ class DomainController extends Controller
 
         return new JsonResponse(array('code' => 200, 'message' => 'success', 'datas' => $formatted));
     }
-        /**
-     * @Rest\View()
-     * @Rest\Get("/api/domains/{slug}.{extension}")
-     */
 
-        public function getDomainAction(Request $request, $extension = '', $slug ='')
-    {
+
+    //     public function getDomainAction(Request $request, $extension = '', $slug ='')
+    // {
        
-            $domain = $this->get('doctrine.orm.entity_manager')
-                    ->getRepository('AppBundle:Domain')
-                    ->findOneBy(['slug'=>$slug]);
-            /* @var $domain Domain[] */
+    //         $domain = $this->get('doctrine.orm.entity_manager')
+    //                 ->getRepository('AppBundle:Domain')
+    //                 ->findOneBy(['slug'=>$slug]);
+    //         /* @var $domain Domain[] */
 
-           // $formatted = [];
-        //     foreach ($domain as $_domain) {
-        //         $formatted[] = [
-        //            'id' => $_domain->getId(),
-        //            'slug' => $_domain->getSlug(),
-        //             'name' => $_domain->getName(),
-        //            'description' => $_domain->getDescription(),
-        //         ];
-        //     }
+    //        $formatted = [];
+    //         foreach ($domain as $_domain) {
+    //             $formatted[] = [
+    //                'id' => $_domain->getId(),
+    //                'slug' => $_domain->getSlug(),
+    //                 'name' => $_domain->getName(),
+    //                'description' => $_domain->getDescription(),
+    //                'creators' => $_domain->getUser(),
+    //                'created_at'=> $_domain->getCreatedAt()
+    //             ];
+    //         }
         
      
 
      
 
-        // Gestion de la réponse
-        return $domain->getUsers();
+    //     // Gestion de la réponse
+    //     //return $domain;
 
-        //return new JsonResponse(array('code' => 200, 'message' => 'success', 'datas' => $domain));
-    }
+    //     return ['code' => 200, 'message' => 'success', 'datas' => $formatted];
+    // }
+
+    /**
+    * @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    */
+   public function getDomainAction($domain)
+   {
+       return $domain;
+   }
 }

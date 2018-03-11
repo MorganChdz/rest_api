@@ -69,23 +69,10 @@ swiftmailer:
     spool: { type: memory }
 
 fos_rest:
-    routing_loader:
-        include_format: false
-    body_converter:
-        enabled: true
-    view:
-        view_response_listener: true
-    serializer:
-        serialize_null: true
-    format_listener:
-        rules:
-            - { path: '^/', priorities: ['json'], fallback_format: 'json' } 
-    exception:
-        enabled: true
-        exception_controller: 'fos_rest.exception.controller:showAction'
-    routing_loader:
+   routing_loader:
        default_format: json
 
 sensio_framework_extra:
     view: { annotations: true }
+
 

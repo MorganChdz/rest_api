@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use FOS\RestBundle\Controller\FOSRestController;
 
 class DomainController extends Controller
 {
@@ -92,6 +93,11 @@ class DomainController extends Controller
     */
    public function getDomainAction($domain)
    {
-       return $domain;
-   }
+  $data = array(
+           "code" => 200,
+           "message" => "success",
+           "datas" => $domain
+       );
+       $view = $this->view($data, 200);
+       return $this->handleView($view);   }
 }

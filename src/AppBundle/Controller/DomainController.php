@@ -15,85 +15,25 @@ use FOS\RestBundle\Controller\FOSRestController;
 
 class DomainController extends FOSRestController
 {
-    // /**
-    //  * @Rest\View()
-    //  * @Rest\Get("/domains{extension}")
-    //  */
-    // public function getDomainsAction(Request $request, $extension = '')
-    // {
-    //     // if($extension=='.json'){
-    //         $domain = $this->get('doctrine.orm.entity_manager')
-    //                 ->getRepository('AppBundle:Domain')
-    //                 ->findAll();
-    //         /* @var $domain Domain[] */
-
-    //     //     $formatted = [];
-    //     //     foreach ($domain as $_domain) {
-    //     //         $formatted[] = [
-    //     //            'id' => $_domain->getId(),
-    //     //            'slug' => $_domain->getSlug(),
-    //     //             'name' => $_domain->getName(),
-    //     //            'description' => $_domain->getDescription(),
-    //     //         ];
-    //     //     }
-    //     // }
-    //     // else {
-    //     //     return new JsonResponse(array('code' => 400, 'message' => 'Bad Request', 'datas' => array('.json')), 400);
-    //     // }
-
-    //     // Récupération du view handler
-    //      $data = array(
-    //        "code" => 200,
-    //        "message" => "success",
-    //        "datas" => $domain
-    //    );
-    //    $view = $this->view($data, 200);
-    //    return $this->handleView($view);   
-    // }
-    //     /**
-    //  * @Rest\View()
-    //  * @Rest\Get("/api/domains/{slug}.{extension}")
-    //  */
-
-    //     public function getDomainAction(Request $request, $extension = '', $slug ='')
-    // {
-       
-    //         $domain = $this->get('doctrine.orm.entity_manager')
-    //                 ->getRepository('AppBundle:Domain')
-    //                 ->findOneBy(['slug'=>$slug]);
-    //         /* @var $domain Domain[] */
-
-    //        $formatted = [];
-    //         foreach ($domain as $_domain) {
-    //             $formatted[] = [
-    //                'id' => $_domain->getId(),
-    //                'slug' => $_domain->getSlug(),
-    //                 'name' => $_domain->getName(),
-    //                'description' => $_domain->getDescription(),
-    //                'creators' => $_domain->getUser(),
-    //                'created_at'=> $_domain->getCreatedAt()
-    //             ];
-    //         }
-        
-     
-
-     
-
-    //     // Gestion de la réponse
-    //     //return $domain;
-
-    //     return ['code' => 200, 'message' => 'success', 'datas' => $formatted];
-    // }
-
        public function getDomainsAction()
   {
        $domains = $this->get('doctrine.orm.entity_manager')
                    ->getRepository('AppBundle:Domain')
                    ->findAll();
+
+        $formatted = [];
+        foreach ($domains as $_domain) {
+            $formatted[] = [
+               'id' => $_domain->getId(),
+               'slug' => $_domain->getSlug(),
+                'name' => $_domain->getName(),
+               'description' => $_domain->getDescription()
+            ];
+        }
      $data = array(
           "code" => 200,
           "message" => "success",
-          "datas" => $domains
+          "datas" => $formatted
       );
       $view = $this->view($data, 200);
       return $this->handleView($view);  
@@ -104,24 +44,24 @@ class DomainController extends FOSRestController
     */
    public function getDomainAction($domain)
    {
-           $formatted = [];
-            foreach ($domain as $_domain) {
-                $formatted[] = [
-                   'id' => $_domain->getId(),
-                   'slug' => $_domain->getSlug(),
-                    'name' => $_domain->getName(),
-                   'description' => $_domain->getDescription(),
-                   'creators' => $_domain->getUser(),
-                   'created_at'=> $_domain->getCreatedAt(),
-                ];
-            }
+
+    foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }
+       $formatted = [];
+        $formatted = [
+            'langs' => $formatted_lang,
+           'id' => $domain->getId(),
+           'slug' => $domain->getSlug(),
+            'name' => $domain->getName(),
+           'description' => $domain->getDescription(),
+           'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
+           'created_at'=> $domain->getCreatedAt()
+        ];
 
         $data = array(
            "code" => 200,
            "message" => "success",
            "datas" => $formatted
        );
-
 
        $view = $this->view($data, 200);
        return $this->handleView($view);   
@@ -141,5 +81,15 @@ class DomainController extends FOSRestController
        ]);
        $response->setStatusCode(400);
        return $response;
+   }
+
+    public function formatted($nb, $response)
+   {
+        $formatted = [];
+        $i = 0;
+        for($i =0; $i < $nb; $i++){
+            array_push($formatted, $response[$i]);
+        }
+       return $formatted;
    }
 }

@@ -6,6 +6,6 @@ domains:
     type:     rest
     resource: AppBundle\Controller\DomainController
 
-mailers:
-    type:     rest
-    resource: AppBundle\Controller\MailerController
+# mailers:
+#     type:     rest
+#     resource: AppBundle\Controller\MailerController

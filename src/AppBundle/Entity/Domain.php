@@ -9,15 +9,18 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Domain
 {
+
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
+
     protected $id;
 
     /**
-     * @ORM\Column(type="integer")
+    * @ORM\Column(type="integer", name="user_id")
      */
     protected $user_id;
 
@@ -38,9 +41,21 @@ class Domain
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
-
      */
     protected $createdAt;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="User", mappedBy="domains")
+     * @var User[]
+     */
+    protected $users;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
+   
+
 
     public function getId()
     {
@@ -70,6 +85,12 @@ class Domain
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+
+    public function getUsers()
+    {
+        return $this->users;
     }
 
     public function setId($id)
@@ -105,6 +126,12 @@ class Domain
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+        public function setUsers($users)
+    {
+        $this->users = $users;
         return $this;
     }
 }

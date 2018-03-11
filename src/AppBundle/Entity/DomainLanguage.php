@@ -16,7 +16,6 @@ class DomainLanguage
     protected $domain_id;
 
     /**
-    * @ORM\Id
      * @ORM\Column(type="string")
      */
     protected $lang_id;

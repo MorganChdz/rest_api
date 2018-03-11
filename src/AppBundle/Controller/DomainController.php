@@ -17,7 +17,7 @@ class DomainController extends Controller
      * @Rest\View()
      * @Rest\Get("/api/domains{extension}")
      */
-    public function getDomainAction(Request $request, $extension = '')
+    public function getDomainsAction(Request $request, $extension = '')
     {
         if($extension=='.json'){
             $domain = $this->get('doctrine.orm.entity_manager')
@@ -50,5 +50,37 @@ class DomainController extends Controller
         //return $domain;
 
         return new JsonResponse(array('code' => 200, 'message' => 'success', 'datas' => $formatted));
+    }
+        /**
+     * @Rest\View()
+     * @Rest\Get("/api/domains/{slug}.{extension}")
+     */
+
+        public function getDomainAction(Request $request, $extension = '', $slug ='')
+    {
+       
+            $domain = $this->get('doctrine.orm.entity_manager')
+                    ->getRepository('AppBundle:Domain')
+                    ->findOneBy(['slug'=>$slug]);
+            /* @var $domain Domain[] */
+
+           // $formatted = [];
+        //     foreach ($domain as $_domain) {
+        //         $formatted[] = [
+        //            'id' => $_domain->getId(),
+        //            'slug' => $_domain->getSlug(),
+        //             'name' => $_domain->getName(),
+        //            'description' => $_domain->getDescription(),
+        //         ];
+        //     }
+        
+     
+
+     
+
+        // Gestion de la réponse
+        return $domain->getUsers();
+
+        //return new JsonResponse(array('code' => 200, 'message' => 'success', 'datas' => $domain));
     }
 }

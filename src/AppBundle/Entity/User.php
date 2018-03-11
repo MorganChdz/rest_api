@@ -9,15 +9,19 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
+
+ 
     /**
-     * @ORM\Id
+      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
+
     protected $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", name="username")
+
      */
     protected $username;
 
@@ -33,6 +37,11 @@ class User
 
     protected $password;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="users")
+     * @var Domain
+     */
+    protected $domains;
 
     public function getId()
     {
@@ -52,6 +61,11 @@ class User
     public function getPassword()
     {
         return $this->password;
+    }
+
+        public function getDomains()
+    {
+        return $this->domains;
     }
 
     public function setId($id)
@@ -75,6 +89,12 @@ class User
    public function setPassword($password)
     {
         $this->password = $password;
+        return $this;
+    }
+
+       public function setDomains($domains)
+    {
+        $this->domains = $domains;
         return $this;
     }
 }

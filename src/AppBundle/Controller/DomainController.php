@@ -52,7 +52,10 @@ class DomainController extends Controller
 
         return new JsonResponse(array('code' => 200, 'message' => 'success', 'datas' => $formatted));
     }
-
+    //     /**
+    //  * @Rest\View()
+    //  * @Rest\Get("/api/domains/{slug}.{extension}")
+    //  */
 
     //     public function getDomainAction(Request $request, $extension = '', $slug ='')
     // {
@@ -84,7 +87,7 @@ class DomainController extends Controller
     //     return ['code' => 200, 'message' => 'success', 'datas' => $formatted];
     // }
 
-    /**
+     /**
     * @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
     */
    public function getDomainAction($domain)

@@ -55,10 +55,13 @@ class Domain
         $this->user = new ArrayCollection();
          $this->domain_lang = new ArrayCollection();
     }
-        /**
-     * @ORM\ManyToMany(targetEntity="DomainLanguage", inversedBy="domain_id")
-     * @var DomainLanguage[]
-     */
+     /**
+    * @ORM\ManyToMany(targetEntity="AppBundle\Entity\DomainLanguage")
+    * @ORM\JoinTable(
+    *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
+    *      inverseJoinColumns={@ORM\JoinColumn(name="lang_id", referencedColumnName="code")}
+    * )    
+    */
     protected $domain_lang;
 
 

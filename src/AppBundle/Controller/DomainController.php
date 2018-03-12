@@ -90,19 +90,19 @@ class DomainController extends FOSRestController
     //        'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
     //        'created_at'=> $domain->getCreatedAt()
     //     ];
-    $translations = $this->get('doctrine.orm.entity_manager')
-                   ->getRepository('AppBundle:Translation')
+    $domain = $this->get('doctrine.orm.entity_manager')
+                   ->getRepository('AppBundle:Domain')
                    ->findAll();
 
 
-    foreach ($translations as $value)
-     {$formatted_test = $value->getTranslations(); }
+    // foreach ($translations as $value)
+    //  {$formatted_test = $value->getTranslations(); }
 
 
         $data = array(
            "code" => 200,
            "message" => "success",
-           "datas" => $translations
+           "datas" => $domain
        );
 
        $view = $this->view($data, 200);

@@ -11,50 +11,39 @@ class Translation
 {
     /**
     * @ORM\Id
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
 
     protected $id;
 
     /**
-    * @ORM\Column(type="string", name="domain_id", unique= true)
-    * @ORM\OneToMany(targetEntity="Domain", mappedBy="id")
+     * @ORM\JoinColumn(nullable=false)
+    * @ORM\ManyToOne(targetEntity="Domain", inversedBy="translations")
      */
-    protected $domain_id;
+    protected $domain;
 
     /**
     * @ORM\Column(type="string", name="code")
-     * @ORM\OneToMany(targetEntity="Lang", mappedBy="code")
      */
     protected $code;
 
-    /**
-    * @ORM\ManyToMany(targetEntity="Lang")
-    * @ORM\JoinTable(name="translation_to_lang",
-    *      joinColumns={@ORM\JoinColumn(name="translation_id", referencedColumnName="id")},
-    *      inverseJoinColumns={@ORM\JoinColumn(name="lang_id", referencedColumnName="code")}
-    * )
-    */
-   private $translations;
+
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getDomainId()
+    public function getDomain()
     {
-        return $this->domain_id;
+        return $this->domain;
     }
     public function getCode()
     {
         return $this->code;
     }
-        public function getTranslations()
-    {
-        return $this->translations;
-    }
+
 
     public function setId($id)
     {
@@ -62,7 +51,7 @@ class Translation
         return $this;
     }
 
-    public function setDomainId($domain_id)
+    public function setDomain($domain)
     {
         $this->domain_id = $domain_id;
         return $this;
@@ -73,10 +62,6 @@ class Translation
         $this->code = $code;
         return $this;
     }
-   public function setTranslations($translations)
-    {
-        $this->translations = $translations;
-        return $this;
-    }
+
 
 }

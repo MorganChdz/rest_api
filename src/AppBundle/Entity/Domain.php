@@ -66,6 +66,13 @@ class Domain
    private $langs;
 
 
+
+        /**
+    * @ORM\OneToMany(targetEntity="AppBundle\Entity\Translation", mappedBy="domain")
+    */
+   private $translations;
+
+
     public function getId()
     {
         return $this->id;
@@ -107,6 +114,10 @@ class Domain
         return $this->langs;
     }
 
+         public function getTranslations()
+    {
+        return $this->translations;
+    }
 
 
     public function setId($id)
@@ -156,5 +167,9 @@ class Domain
         $this->langs = $langs;
         return $this;
     }
-
+            public function setTranslations($translations)
+    {
+        $this->translations = $translations;
+        return $this;
+    }
 }

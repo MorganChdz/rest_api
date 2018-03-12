@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class User
 {
 
- 
+
     /**
       * @ORM\Id
      * @ORM\Column(type="integer")
@@ -59,10 +59,6 @@ class User
         return $this->password;
     }
 
-        public function getDomains()
-    {
-        return $this->domains;
-    }
 
     public function setId($id)
     {
@@ -88,9 +84,4 @@ class User
         return $this;
     }
 
-       public function setDomains($domains)
-    {
-        $this->domains = $domains;
-        return $this;
-    }
 }

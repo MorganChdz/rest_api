@@ -9,8 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Lang
 {
-
- 
     /**
       * @ORM\Id
      * @ORM\Column(type="string")

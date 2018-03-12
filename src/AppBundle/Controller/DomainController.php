@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
+use AppBundle\Entity\Translation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\FOSRestController;
 
@@ -36,10 +37,10 @@ class DomainController extends FOSRestController
           "datas" => $formatted
       );
       $view = $this->view($data, 200);
-      return $this->handleView($view);  
+      return $this->handleView($view);
 }
 
-     /**
+    /**
     * @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
     */
    public function getDomainAction($domain)
@@ -47,7 +48,7 @@ class DomainController extends FOSRestController
            $formatted_lang = [];
     if(count($domain->getLangs()))
     {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
- 
+
        $formatted = [];
         $formatted = [
             'langs' => $formatted_lang,
@@ -67,8 +68,80 @@ class DomainController extends FOSRestController
        );
 
        $view = $this->view($data, 200);
-       return $this->handleView($view);   
-}
+       return $this->handleView($view);
+  }
+
+    /**
+    *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    */
+   public function getDomainTranslationsAction($domain)
+   {
+           // $formatted_lang = [];
+    // if(count($domain->getLangs()))
+    // {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
+
+    //    $formatted = [];
+    //     $formatted = [
+    //         'langs' => $formatted_lang,
+    //        'id' => $domain->getId(),
+    //        'slug' => $domain->getSlug(),
+    //         'name' => $domain->getName(),
+    //        'description' => $domain->getDescription(),
+    //        'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
+    //        'created_at'=> $domain->getCreatedAt()
+    //     ];
+    $translations = $this->get('doctrine.orm.entity_manager')
+                   ->getRepository('AppBundle:Translation')
+                   ->findAll();
+
+
+    foreach ($translations as $value)
+     {$formatted_test = $value->getTranslations(); }
+
+
+        $data = array(
+           "code" => 200,
+           "message" => "success",
+           "datas" => $translations
+       );
+
+       $view = $this->view($data, 200);
+       return $this->handleView($view);
+  }
+
+     public function getTranslationsAction()
+   {
+           // $formatted_lang = [];
+    // if(count($domain->getLangs()))
+    // {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
+
+    //    $formatted = [];
+    //     $formatted = [
+    //         'langs' => $formatted_lang,
+    //        'id' => $domain->getId(),
+    //        'slug' => $domain->getSlug(),
+    //         'name' => $domain->getName(),
+    //        'description' => $domain->getDescription(),
+    //        'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
+    //        'created_at'=> $domain->getCreatedAt()
+    //     ];
+
+$translations = $this->get('doctrine.orm.entity_manager')
+                   ->getRepository('AppBundle:Translation')
+                   ->findAll();
+        $data = array(
+           "code" => 200,
+           "message" => "success",
+           "datas" => $translations
+       );
+
+        // foreach ($translations as $value) {
+        //     var_dump($value->getTranslations());
+        //   };
+
+       $view = $this->view($data, 200);
+       return $this->handleView($view);
+  }
 
     /**
     * @Route("/{slug}", name="donation.oldhomepage", requirements={"slug" = ".*.[^json]$"})

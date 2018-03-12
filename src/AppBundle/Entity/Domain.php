@@ -43,7 +43,7 @@ class Domain
      * @ORM\Column(type="datetime", name="created_at")
      */
     protected $createdAt;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @var User[]
@@ -56,12 +56,12 @@ class Domain
         $this->langs = new ArrayCollection();
     }
 
-        /**
+    /**
     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Lang")
     * @ORM\JoinTable(
     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
     *      inverseJoinColumns={@ORM\JoinColumn(name="lang_id", referencedColumnName="code")}
-    * )    
+    * )
     */
    private $langs;
 
@@ -106,6 +106,8 @@ class Domain
     {
         return $this->langs;
     }
+
+
 
     public function setId($id)
     {
@@ -154,4 +156,5 @@ class Domain
         $this->langs = $langs;
         return $this;
     }
+
 }

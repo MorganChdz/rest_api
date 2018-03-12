@@ -6,7 +6,3 @@ domains:
     type:     rest
     resource: AppBundle\Controller\DomainController
     prefix: /api
-
-# mailers:
-#     type:     rest
-#     resource: AppBundle\Controller\MailerController

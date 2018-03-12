@@ -28,6 +28,12 @@ class Translation
      */
     protected $code;
 
+    /**
+    * @ORM\OneToMany(targetEntity="AppBundle\Entity\TranslationToLang", mappedBy="translation")
+    */
+   private $translationToLang;
+
+
 
     public function getId()
     {
@@ -42,9 +48,9 @@ class Translation
     {
         return $this->code;
     }
-        public function getTranslations()
+        public function getTranslationToLang()
     {
-        return $this->translations;
+        return $this->translationToLang;
     }
 
     public function setId($id)
@@ -64,9 +70,9 @@ class Translation
         $this->code = $code;
         return $this;
     }
-   public function setTranslations($translations)
+   public function setTranslationToLang($translationToLang)
     {
-        $this->translations = $translations;
+        $this->translationToLang = $translationToLang;
         return $this;
     }
 

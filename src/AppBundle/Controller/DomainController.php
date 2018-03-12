@@ -76,33 +76,25 @@ class DomainController extends FOSRestController
     */
    public function getDomainTranslationsAction($domain)
    {
-           // $formatted_lang = [];
-    // if(count($domain->getLangs()))
-    // {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
 
-    //    $formatted = [];
-    //     $formatted = [
-    //         'langs' => $formatted_lang,
-    //        'id' => $domain->getId(),
-    //        'slug' => $domain->getSlug(),
-    //         'name' => $domain->getName(),
-    //        'description' => $domain->getDescription(),
-    //        'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
-    //        'created_at'=> $domain->getCreatedAt()
-    //     ];
-    $domain = $this->get('doctrine.orm.entity_manager')
-                   ->getRepository('AppBundle:Domain')
-                   ->findAll();
-
-
-    // foreach ($translations as $value)
-    //  {$formatted_test = $value->getTranslations(); }
+        $res = array_map(function ($translation) {
+   $trans = array_map(function ($transTolang) {
+       return [
+           'lang' => $transTolang->getLang()->getCode(),
+           'trans' => $transTolang->getTrans()
+       ];
+   }, $translation->getTranslationToLang()->toArray());
+   return [
+       'id' => $translation->getId(),
+       'code' => $translation->getCode()
+     ];
+}, $domain->getTranslations()->toArray());
 
 
         $data = array(
            "code" => 200,
            "message" => "success",
-           "datas" => $domain
+           "datas" => $res
        );
 
        $view = $this->view($data, 200);
@@ -111,22 +103,7 @@ class DomainController extends FOSRestController
 
      public function getTranslationsAction()
    {
-           // $formatted_lang = [];
-    // if(count($domain->getLangs()))
-    // {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
-
-    //    $formatted = [];
-    //     $formatted = [
-    //         'langs' => $formatted_lang,
-    //        'id' => $domain->getId(),
-    //        'slug' => $domain->getSlug(),
-    //         'name' => $domain->getName(),
-    //        'description' => $domain->getDescription(),
-    //        'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
-    //        'created_at'=> $domain->getCreatedAt()
-    //     ];
-
-$translations = $this->get('doctrine.orm.entity_manager')
+      $translations = $this->get('doctrine.orm.entity_manager')
                    ->getRepository('AppBundle:Translation')
                    ->findAll();
         $data = array(
@@ -134,10 +111,6 @@ $translations = $this->get('doctrine.orm.entity_manager')
            "message" => "success",
            "datas" => $translations
        );
-
-        // foreach ($translations as $value) {
-        //     var_dump($value->getTranslations());
-        //   };
 
        $view = $this->view($data, 200);
        return $this->handleView($view);

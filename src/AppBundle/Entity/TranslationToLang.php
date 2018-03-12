@@ -33,9 +33,9 @@ class TranslationToLang
         return $this->translation_id;
     }
 
-    public function getLangId()
+    public function getLang()
     {
-        return $this->lang_id;
+        return $this->lang;
     }
 
       public function getTrans()
@@ -49,9 +49,9 @@ class TranslationToLang
         return $this;
     }
 
-    public function setLangId($lang_id)
+    public function setLang($lang)
     {
-        $this->lang_id = $lang_d;
+        $this->lang = $lang;
         return $this;
     }
 

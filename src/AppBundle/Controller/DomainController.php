@@ -47,7 +47,6 @@ class DomainController extends FOSRestController
            $formatted_lang = [];
     if(count($domain->getLangs()))
     {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
-    else{
  
        $formatted = [];
         $formatted = [
@@ -59,7 +58,7 @@ class DomainController extends FOSRestController
            'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
            'created_at'=> $domain->getCreatedAt()
         ];
-    }
+
 
         $data = array(
            "code" => 200,

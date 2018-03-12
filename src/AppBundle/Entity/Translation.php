@@ -29,7 +29,6 @@ class Translation
     protected $code;
 
 
-
     public function getId()
     {
         return $this->id;
@@ -43,7 +42,10 @@ class Translation
     {
         return $this->code;
     }
-
+        public function getTranslations()
+    {
+        return $this->translations;
+    }
 
     public function setId($id)
     {
@@ -62,6 +64,10 @@ class Translation
         $this->code = $code;
         return $this;
     }
-
+   public function setTranslations($translations)
+    {
+        $this->translations = $translations;
+        return $this;
+    }
 
 }

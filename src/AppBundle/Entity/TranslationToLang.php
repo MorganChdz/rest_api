@@ -11,16 +11,17 @@ class TranslationToLang
 {
     /**
       * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-
-    protected $translation_id;
+       * @ORM\JoinColumn(nullable=false)
+      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Translation")
+    */
+    protected $translation;
 
      /**
-    * @ORM\Column(type="string")
+    * @ORM\Id
+     * @ORM\JoinColumn(nullable=false, referencedColumnName="code")
+    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Lang")
      */
-    protected $lang_id;
+    protected $lang;
 
      /**
     * @ORM\Column(type="string")

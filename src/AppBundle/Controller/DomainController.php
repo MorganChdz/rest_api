@@ -45,7 +45,8 @@ class DomainController extends FOSRestController
     */
    public function getDomainAction($domain)
    {
-           $formatted_lang = [];
+
+    $formatted_lang = [];
     if(count($domain->getLangs()))
     {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
 
@@ -59,7 +60,6 @@ class DomainController extends FOSRestController
            'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
            'created_at'=> $domain->getCreatedAt()
         ];
-
 
         $data = array(
            "code" => 200,
@@ -76,40 +76,36 @@ class DomainController extends FOSRestController
     */
    public function getDomainTranslationsAction($domain)
    {
-
+     if(count($domain->getTranslations())){
         $res = array_map(function ($translation) {
-   $trans = array_map(function ($transTolang) {
-       return [
-           'lang' => $transTolang->getLang()->getCode(),
+        $trans = array_map(function ($transTolang) {
+        return[
+            'lang' => $transTolang->getLang()->getCode(),
            'trans' => $transTolang->getTrans()
-       ];
-   }, $translation->getTranslationToLang()->toArray());
-   return [
-       'id' => $translation->getId(),
-       'code' => $translation->getCode()
-     ];
-}, $domain->getTranslations()->toArray());
-
+        ];
+       }, $translation->getTranslationToLang()->toArray());
+        $format = array();
+        foreach ($trans as $key => $value) {
+          foreach ($value as $key_a => $value_a) {
+            $format[$value['lang']] = $value_a;
+          }
+        }
+       return [
+           'trans' => $format,
+           'id' => $translation->getId(),
+           'code' => $translation->getCode()
+         ];
+      }, $domain->getTranslations()->toArray());}
+      else {
+        $res= array(
+          'trans' => ['EN'=>'', 'FR'=>'']
+        );
+      }
 
         $data = array(
            "code" => 200,
            "message" => "success",
            "datas" => $res
-       );
-
-       $view = $this->view($data, 200);
-       return $this->handleView($view);
-  }
-
-     public function getTranslationsAction()
-   {
-      $translations = $this->get('doctrine.orm.entity_manager')
-                   ->getRepository('AppBundle:Translation')
-                   ->findAll();
-        $data = array(
-           "code" => 200,
-           "message" => "success",
-           "datas" => $translations
        );
 
        $view = $this->view($data, 200);

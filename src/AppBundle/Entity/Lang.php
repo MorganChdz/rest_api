@@ -2,6 +2,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity()
@@ -16,6 +17,11 @@ class Lang
      */
 
     protected $code;
+
+   // public function __construct()
+   //  {
+   //      $this->code = new ArrayCollection();
+   //  }
 
 
     public function getCode()

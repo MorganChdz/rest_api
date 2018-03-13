@@ -2,6 +2,9 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Domain;
+use AppBundle\Entity\TranslationToLang;
 
 /**
  * @ORM\Entity()
@@ -33,7 +36,11 @@ class Translation
     */
    private $translationToLang;
 
-
+    // public function __construct()
+    // {
+    //     $this->domain = new ArrayCollection(array());
+    //     $this->translationToLang = new ArrayCollection(array());
+    // }
 
     public function getId()
     {
@@ -61,7 +68,7 @@ class Translation
 
     public function setDomain($domain)
     {
-        $this->domain_id = $domain_id;
+        $this->domain= $domain;
         return $this;
     }
 

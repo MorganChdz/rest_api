@@ -2,6 +2,11 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\User;
+use AppBundle\Entity\Lang;
+use AppBundle\Entity\Translation;
+use AppBundle\Entity\TranslationToLang;
 
 /**
  * @ORM\Entity()
@@ -50,11 +55,11 @@ class Domain
      */
     protected $user;
 
-    public function __construct()
-    {
-        $this->user = new ArrayCollection();
-        $this->langs = new ArrayCollection();
-    }
+    // public function __construct()
+    // {
+    //     $this->user = new User();
+    //     $this->langs = new Lang();
+    // }
 
     /**
     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Lang")

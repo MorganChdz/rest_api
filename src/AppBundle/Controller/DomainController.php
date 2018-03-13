@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
 use AppBundle\Entity\Translation;
+use AppBundle\Entity\TranslationToLang;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\FOSRestController;
 
@@ -110,6 +111,38 @@ class DomainController extends FOSRestController
 
        $view = $this->view($data, 200);
        return $this->handleView($view);
+  }
+    /**
+    *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    */
+   public function postDomainTranslationsAction($domain, Request $request)
+   {
+
+      $response = [
+      "trans"=> $request->get('trans'),
+      "id"=> $request->get('id'),
+      "code"=> $request->get('code')
+      ];
+
+      $data = array(
+      "code" => 201,
+      "message" => "Created",
+      "datas" => $response
+      );
+
+      $trans = new Translation();
+      $trans->setCode($request->get('code'));
+      $trans->setDomain($domain);
+      $trans_to_lang = new TranslationToLang();
+      $trans_to_lang->setTrans($request->get('trans'));
+      $trans->setTranslationToLang($trans_to_lang);
+
+      $entityManager = $this->get('doctrine.orm.entity_manager');
+      $entityManager->persist($trans);
+      //$entityManager->flush();
+
+      $view = $this->view($data, 200);
+      return $this->handleView($view);
   }
 
     /**

@@ -2,7 +2,9 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Translation;
+use AppBundle\Entity\Lang;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="translation_to_lang")
@@ -27,6 +29,12 @@ class TranslationToLang
     * @ORM\Column(type="string")
      */
     protected $trans;
+
+    // public function __construct()
+    // {
+    //     $this->translation = new ArrayCollection(array());
+    //     $this->lang = new ArrayCollection(array());
+    // }
 
     public function getTranslationId()
     {
@@ -57,7 +65,7 @@ class TranslationToLang
 
     public function setTrans($trans)
     {
-        $this->trans = $translation_id;
+        $this->trans = $trans;
         return $this;
     }
 }

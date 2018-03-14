@@ -117,10 +117,20 @@ class DomainController extends FOSRestController
     */
    public function postDomainTranslationsAction($domain, Request $request)
    {
+      $trans_to_lang = new TranslationToLang();
+      $trans_to_lang->setTrans($request->get('trans'));
+    
+      $trans = new Translation($trans_to_lang);
+      $trans->setCode($request->get('code'));
+      $trans->setDomain($domain);
+
+      $entityManager = $this->get('doctrine.orm.entity_manager');
+      $entityManager->persist($trans);
+      $entityManager->flush();
 
       $response = [
       "trans"=> $request->get('trans'),
-      "id"=> $request->get('id'),
+      "id"=> $trans->getId(),
       "code"=> $request->get('code')
       ];
 
@@ -130,16 +140,6 @@ class DomainController extends FOSRestController
       "datas" => $response
       );
 
-      $trans = new Translation();
-      $trans->setCode($request->get('code'));
-      $trans->setDomain($domain);
-      $trans_to_lang = new TranslationToLang();
-      $trans_to_lang->setTrans($request->get('trans'));
-      $trans->setTranslationToLang($trans_to_lang);
-
-      $entityManager = $this->get('doctrine.orm.entity_manager');
-      $entityManager->persist($trans);
-      //$entityManager->flush();
 
       $view = $this->view($data, 200);
       return $this->handleView($view);

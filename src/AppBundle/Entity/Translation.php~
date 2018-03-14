@@ -83,28 +83,4 @@ class Translation
         return $this;
     }
 
-
-    /**
-     * Add translationToLang
-     *
-     * @param \AppBundle\Entity\TranslationToLang $translationToLang
-     *
-     * @return Translation
-     */
-    public function addTranslationToLang(\AppBundle\Entity\TranslationToLang $translationToLang)
-    {
-        $this->translationToLang[] = $translationToLang;
-
-        return $this;
-    }
-
-    /**
-     * Remove translationToLang
-     *
-     * @param \AppBundle\Entity\TranslationToLang $translationToLang
-     */
-    public function removeTranslationToLang(\AppBundle\Entity\TranslationToLang $translationToLang)
-    {
-        $this->translationToLang->removeElement($translationToLang);
-    }
 }

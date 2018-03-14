@@ -185,7 +185,7 @@ class DomainController extends FOSRestController
            ->getRepository('AppBundle:User')
            ->findAll();
       foreach($users as $user){
-        if ('Bearer ' . $user->getPassword() == $token){
+        if ($user->getPassword() == $token){
           return true;
         }
         else

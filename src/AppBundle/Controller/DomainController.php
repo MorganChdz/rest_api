@@ -144,7 +144,7 @@ class DomainController extends FOSRestController
 
       $data = array(
       "code" => 201,
-      "message" => "Created",
+      "message" => "sucess",
       "datas" => $response
       );
 

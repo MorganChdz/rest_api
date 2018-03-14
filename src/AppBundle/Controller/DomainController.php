@@ -117,6 +117,14 @@ class DomainController extends FOSRestController
     */
    public function postDomainTranslationsAction($domain, Request $request)
    {
+   if (!$request->headers->has('Authorization') && function_exists('apache_request_headers')) {
+        $all = apache_request_headers();
+        if (isset($all['Authorization'])) {
+            $request->headers->set('Authorization', $all['Authorization']);
+        }
+    }
+    $token = $request->headers->get('Authorization');
+    if($this->controlAuthorizationToken($token)){
       $trans_to_lang = new TranslationToLang();
       $trans_to_lang->setTrans($request->get('trans'));
     
@@ -141,8 +149,19 @@ class DomainController extends FOSRestController
       );
 
 
-      $view = $this->view($data, 200);
+      $view = $this->view($data, 201);
       return $this->handleView($view);
+      }
+      else {
+        $data = array(
+        "code" => 401,
+        "message" => "Authorization token failed",
+        "token" => $token
+        );
+
+        $view = $this->view($data, 401);
+        return $this->handleView($view);
+      }
   }
 
     /**
@@ -159,6 +178,19 @@ class DomainController extends FOSRestController
        ]);
        $response->setStatusCode(400);
        return $response;
+   }
+
+   public function controlAuthorizationToken($token){
+      $users = $this->get('doctrine.orm.entity_manager')
+           ->getRepository('AppBundle:User')
+           ->findAll();
+      foreach($users as $user){
+        if ('Bearer ' . $user->getPassword() == $token){
+          return true;
+        }
+        else
+         return false;
+      }
    }
 
     public function formatted($nb, $response)

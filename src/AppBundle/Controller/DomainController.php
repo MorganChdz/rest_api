@@ -128,12 +128,22 @@ class DomainController extends FOSRestController
       $form = $this->createForm(TranslationType::class, $request->request->all());
       $form->submit($request->request->all());
       if($form->isValid()){
+        $control = false;
         foreach ($request->get('trans') as $key => $lang) {
           if($this->getLangApi($key)){
-            var_dump($key);
+            $control = true;
+          } else {
+            $control = false;
+            $data = array(
+            "code" => 400,
+            "message" => "Lang not exist"
+            );
+
+            $view = $this->view($data, 400);
+            return $this->handleView($view);
           }
         }
-      if($this->getUserApi($token)){
+      if($this->getUserApi($token) && $control == true){
         if($this->getUserApi($token)->getId() == $domain->getUserId()){
 
         $trans_to_lang = new TranslationToLang();

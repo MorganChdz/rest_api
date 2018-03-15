@@ -125,6 +125,14 @@ class DomainController extends FOSRestController
         }
     }
     $token = $request->headers->get('Authorization');
+      $form = $this->createForm(TranslationType::class, $request->request->all());
+      $form->submit($request->request->all());
+      if($form->isValid()){
+        foreach ($request->get('trans') as $key => $lang) {
+          if($this->getLangApi($key)){
+            var_dump($key);
+          }
+        }
       if($this->getUserApi($token)){
         if($this->getUserApi($token)->getId() == $domain->getUserId()){
 
@@ -135,10 +143,6 @@ class DomainController extends FOSRestController
         $trans->setCode($request->get('code'));
         $trans->setDomain($domain);
 
-        $form = $this->createForm(TranslationType::class, $trans);
-        $form->submit($request->request->all());
-
-        if($form->isValid()){
         $entityManager = $this->get('doctrine.orm.entity_manager');
         $entityManager->persist($trans);
         $entityManager->flush();
@@ -155,14 +159,7 @@ class DomainController extends FOSRestController
         "datas" => $response
         );
 
-        }
-        else {
-        $data = array(
-        "code" => 400,
-        "message" => "Error Form",
-        "datas" => $response
-        );
-        }
+
         $view = $this->view($data, 201);
         return $this->handleView($view);
         }
@@ -186,6 +183,16 @@ class DomainController extends FOSRestController
         $view = $this->view($data, 401);
         return $this->handleView($view);
       }
+    } else {
+      $data = array(
+        "code" => 400,
+        "message" => "Error Form"
+        );
+
+        $view = $this->view($data, 401);
+        return $this->handleView($view);
+    }
+
   }
 
     /**
@@ -210,10 +217,10 @@ class DomainController extends FOSRestController
           ->findOneByPassword($token);
       }
 
-    public function getLangApi(){
+    public function getLangApi($code){
       return $this->get('doctrine.orm.entity_manager')
           ->getRepository('AppBundle:Lang')
-          ->findAll();
+          ->findOneByCode($code);
       }
 
     public function formatted($nb, $response)

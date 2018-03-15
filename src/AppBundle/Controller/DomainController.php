@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
 use AppBundle\Entity\Translation;
 use AppBundle\Entity\TranslationToLang;
+use AppBundle\Form\Type\TranslationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\FOSRestController;
 
@@ -124,33 +125,56 @@ class DomainController extends FOSRestController
         }
     }
     $token = $request->headers->get('Authorization');
-    if($this->controlAuthorizationToken($token)){
-      $trans_to_lang = new TranslationToLang();
-      $trans_to_lang->setTrans($request->get('trans'));
-    
-      $trans = new Translation($trans_to_lang);
-      $trans->setCode($request->get('code'));
-      $trans->setDomain($domain);
+      if($this->getUserApi($token)){
+        if($this->getUserApi($token)->getId() == $domain->getUserId()){
 
-      $entityManager = $this->get('doctrine.orm.entity_manager');
-      $entityManager->persist($trans);
-      $entityManager->flush();
+        $trans_to_lang = new TranslationToLang();
+        $trans_to_lang->setTrans($request->get('trans'));
 
-      $response = [
-      "trans"=> $request->get('trans'),
-      "id"=> $trans->getId(),
-      "code"=> $request->get('code')
-      ];
+        $trans = new Translation($trans_to_lang);
+        $trans->setCode($request->get('code'));
+        $trans->setDomain($domain);
 
-      $data = array(
-      "code" => 201,
-      "message" => "sucess",
-      "datas" => $response
-      );
+        $form = $this->createForm(TranslationType::class, $trans);
+        $form->submit($request->request->all());
 
+        if($form->isValid()){
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+        $entityManager->persist($trans);
+        $entityManager->flush();
 
-      $view = $this->view($data, 201);
-      return $this->handleView($view);
+        $response = [
+        "trans"=> $request->get('trans'),
+        "id"=> $trans->getId(),
+        "code"=> $request->get('code')
+        ];
+
+        $data = array(
+        "code" => 201,
+        "message" => "success",
+        "datas" => $response
+        );
+
+        }
+        else {
+        $data = array(
+        "code" => 400,
+        "message" => "Error Form",
+        "datas" => $response
+        );
+        }
+        $view = $this->view($data, 201);
+        return $this->handleView($view);
+        }
+        else {
+           $data = array(
+          "code" => 403,
+          "message" => "Forbidden"
+          );
+
+          $view = $this->view($data, 401);
+          return $this->handleView($view);
+        }
       }
       else {
         $data = array(
@@ -180,18 +204,17 @@ class DomainController extends FOSRestController
        return $response;
    }
 
-   public function controlAuthorizationToken($token){
-      $users = $this->get('doctrine.orm.entity_manager')
-           ->getRepository('AppBundle:User')
-           ->findAll();
-      foreach($users as $user){
-        if ($user->getPassword() == $token){
-          return true;
-        }
-        else
-         return false;
+    public function getUserApi($token){
+      return $this->get('doctrine.orm.entity_manager')
+          ->getRepository('AppBundle:User')
+          ->findOneByPassword($token);
       }
-   }
+
+    public function getLangApi(){
+      return $this->get('doctrine.orm.entity_manager')
+          ->getRepository('AppBundle:Lang')
+          ->findAll();
+      }
 
     public function formatted($nb, $response)
    {

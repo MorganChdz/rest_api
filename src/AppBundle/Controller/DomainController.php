@@ -129,6 +129,7 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
       $form = $this->createForm(TranslationType::class, $request->request->all());
       $form->submit($request->request->all());
+      if ($form->getErrors() != null) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       if($form->isValid()){
         $control = false;
         foreach ($request->get('trans') as $key => $lang) {
@@ -145,8 +146,6 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
             return $this->handleView($view);
           }
         }
-      if($this->getUserApi($token) && $control == true){
-        if($this->getUserApi($token)->getId() == $domain->getUserId()){
 
         $trans_to_lang = new TranslationToLang();
         $trans_to_lang->setTrans($request->get('trans'));
@@ -171,30 +170,9 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         "datas" => $response
         );
 
-
-        $view = $this->view($data, 201);
-        return $this->handleView($view);
-        }
-        else {
-           $data = array(
-          "code" => 403,
-          "message" => "Forbidden"
-          );
-
-          $view = $this->view($data, 401);
-          return $this->handleView($view);
-        }
-      }
-      else {
-        $data = array(
-        "code" => 401,
-        "message" => "Authorization token failed",
-        "token" => $token
-        );
-
         $view = $this->view($data, 401);
         return $this->handleView($view);
-      }
+      
     } else {
       $data = array(
         "code" => 400,

@@ -125,9 +125,8 @@ class DomainController extends FOSRestController
         }
     }
     $token = $request->headers->get('Authorization');
-    if ($this-> getUserApi()) throw new Exception("Error Processing Request", 1);
-     new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
-      if ( $this-> getUserApi()->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+if ($this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
+      if ( $this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
       $form = $this->createForm(TranslationType::class, $request->request->all());
       $form->submit($request->request->all());
       if($form->isValid()){

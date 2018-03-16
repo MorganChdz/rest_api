@@ -41,17 +41,17 @@ class ExceptionListener
            return;
        }
 
-       $response = $exception;
+       //$response = $exception;
 
-       // $response = new JsonResponse([
-       //     "code"=> 400,
-       //     "message"=> 'Bad request',
-       //     "datas"=>[
-       //         "exception" => get_class($exception)
-       //     ]
-       // ]);
-       // $response->setStatusCode( 400);
-       // $event->setResponse($response);
-       // return;
+       $response = new JsonResponse([
+           "code"=> 400,
+           "message"=> 'Bad request',
+           "datas"=>[
+               "exception" => get_class($exception)
+           ]
+       ]);
+       $response->setStatusCode( 400);
+       $event->setResponse($response);
+       return;
     }
 }

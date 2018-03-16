@@ -170,7 +170,7 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         "datas" => $response
         );
 
-        $view = $this->view($data, 401);
+        $view = $this->view($data, 201);
         return $this->handleView($view);
       
     } else {

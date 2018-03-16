@@ -129,7 +129,7 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
       $form = $this->createForm(TranslationType::class, $request->request->all());
       $form->submit($request->request->all());
-      if ($form->getErrors() != null) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+      if (count($form->getErrors())) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       if($form->isValid()){
         $control = false;
         foreach ($request->get('trans') as $key => $lang) {

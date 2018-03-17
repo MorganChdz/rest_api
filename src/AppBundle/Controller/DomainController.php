@@ -129,11 +129,11 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
       $form = $this->createForm(TranslationType::class, $request->request->all());
       $form->submit($request->request->all());
-      if (count($form->getErrors())) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+      if (count($form->getErrors()) || !$form->isValid()) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       foreach ($request->get('trans') as $key => $lang) {
           if (!$this->getLangApi($key)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       }
-      if($form->isValid()){
+
         $trans_to_lang = new TranslationToLang();
         $trans_to_lang->setTrans($request->get('trans'));
 
@@ -145,16 +145,15 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         $entityManager->persist($transl);
         $entityManager->flush();
 
-        $trans = $transl->getTranslationToLang()->toArray();
-        $format = array();
-        foreach ($trans as $key => $value) {
-          foreach ($value as $key_a => $value_a) {
-            $format[$value['lang']] = $value_a;
-          }
-        }
+        $trans = $request->get('trans');
+       foreach ($domain->getLangs() as $lang) {
+         if (!isset($trans[$lang->getCode()])) {
+           $trans[$lang->getCode()] = $request->get('code');
+         }
+       }
 
         $response = [
-        "trans"=> $format,
+        "trans"=> $trans,
         "id"=> $transl->getId(),
         "code"=> $transl->getCode()
         ];
@@ -167,17 +166,6 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
 
         $view = $this->view($data, 201);
         return $this->handleView($view);
-      
-    } else {
-      $data = array(
-        "code" => 400,
-        "message" => "Error Form"
-        );
-
-        $view = $this->view($data, 401);
-        return $this->handleView($view);
-    }
-
   }
 
     /**

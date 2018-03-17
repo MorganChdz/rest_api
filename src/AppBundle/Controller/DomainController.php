@@ -130,38 +130,33 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       $form = $this->createForm(TranslationType::class, $request->request->all());
       $form->submit($request->request->all());
       if (count($form->getErrors())) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+      foreach ($request->get('trans') as $key => $lang) {
+          if (!$this->getLangApi($key)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+      }
       if($form->isValid()){
-        $control = false;
-        foreach ($request->get('trans') as $key => $lang) {
-          if($this->getLangApi($key)){
-            $control = true;
-          } else {
-            $control = false;
-            $data = array(
-            "code" => 400,
-            "message" => "Lang not exist"
-            );
-
-            $view = $this->view($data, 400);
-            return $this->handleView($view);
-          }
-        }
-
         $trans_to_lang = new TranslationToLang();
         $trans_to_lang->setTrans($request->get('trans'));
 
-        $trans = new Translation($trans_to_lang);
-        $trans->setCode($request->get('code'));
-        $trans->setDomain($domain);
+        $transl = new Translation($trans_to_lang);
+        $transl->setCode($request->get('code'));
+        $transl->setDomain($domain);
 
         $entityManager = $this->get('doctrine.orm.entity_manager');
-        $entityManager->persist($trans);
+        $entityManager->persist($transl);
         $entityManager->flush();
 
+        $trans = $transl->getTranslationToLang()->toArray();
+        $format = array();
+        foreach ($trans as $key => $value) {
+          foreach ($value as $key_a => $value_a) {
+            $format[$value['lang']] = $value_a;
+          }
+        }
+
         $response = [
-        "trans"=> $request->get('trans'),
-        "id"=> $trans->getId(),
-        "code"=> $request->get('code')
+        "trans"=> $format,
+        "id"=> $transl->getId(),
+        "code"=> $transl->getCode()
         ];
 
         $data = array(

@@ -202,9 +202,18 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         $entityManager = $this->get('doctrine.orm.entity_manager');
 
        foreach ($request->get('trans') as $key => $trans) {
+          if($trans_to_lang->getLang() === $entityManager->find(Lang::class, $key)){
             $trans_to_lang->setLang($entityManager->find(Lang::class, $key));
             $trans_to_lang->setTrans($trans);
             $transl->addTranslationToLang($trans_to_lang);
+          }
+          else {
+            $trans_to_lang = new TranslationToLang();
+            $trans_to_lang->setTranslation($transl);
+            $trans_to_lang->setLang($entityManager->find(Lang::class, $key));
+            $trans_to_lang->setTrans($trans);
+            $transl->addTranslationToLang($trans_to_lang);
+          }
        }
 
         $trans = array_map(function ($transTolang) {

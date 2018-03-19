@@ -14,14 +14,14 @@ class TranslationToLang
     /**
       * @ORM\Id
        * @ORM\JoinColumn(nullable=false)
-      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Translation")
+      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Translation", cascade={"persist"})
     */
     protected $translation;
 
      /**
     * @ORM\Id
      * @ORM\JoinColumn(nullable=false, referencedColumnName="code")
-    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Lang")
+    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Lang", cascade={"persist"})
      */
     protected $lang;
 

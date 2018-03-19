@@ -32,7 +32,7 @@ class Translation
     protected $code;
 
     /**
-    * @ORM\OneToMany(targetEntity="AppBundle\Entity\TranslationToLang", mappedBy="translation")
+    * @ORM\OneToMany(targetEntity="AppBundle\Entity\TranslationToLang", mappedBy="translation", cascade={"persist"})
     */
    private $translationToLang;
 

@@ -199,9 +199,7 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         $entityManager = $this->get('doctrine.orm.entity_manager');
 
        foreach ($request->get('trans') as $key => $trans) {
-            $lang = new Lang();
-            $lang->setCode($key);
-            $trans_to_lang->setLang($lang);
+            $trans_to_lang->setLang($entityManager->find(Lang::class, $key));
             $trans_to_lang->setTrans($trans);
             $transl->addTranslationToLang($trans_to_lang);
        }
@@ -219,6 +217,7 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
           }
         }
 
+        $entityManager->merge($transl);
         $entityManager->merge($trans_to_lang);
         $entityManager->flush();
 

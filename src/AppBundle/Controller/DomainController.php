@@ -79,26 +79,14 @@ class DomainController extends FOSRestController
     */
    public function getDomainTranslationsAction($domain)
    {
-     if(count($domain->getTranslations())){
-        $res = array_map(function ($translation) {
-        $trans = array_map(function ($transTolang) {
-        return[
-            'lang' => $transTolang->getLang()->getCode(),
-           'trans' => $transTolang->getTrans()
-        ];
-       }, $translation->getTranslationToLang()->toArray());
-        $format = array();
-        foreach ($trans as $key => $value) {
-          foreach ($value as $key_a => $value_a) {
-            $format[$value['lang']] = $value_a;
-          }
-        }
-       return [
-           'trans' => $format,
-           'id' => $translation->getId(),
-           'code' => $translation->getCode()
-         ];
-      }, $domain->getTranslations()->toArray());}
+    if(count($domain->getTranslations())){
+       $res = array_map(function ($translation) {
+         return [
+          'trans' => $translation->getVirtualLangs(),
+          'id' => $translation->getId(),
+          'code' => $translation->getCode()
+        ];}, $domain->getTranslations()->toArray());
+     }
       else {
         $res= array(
           'trans' => ['EN'=>'', 'FR'=>'', 'PL'=>'']
@@ -134,24 +122,28 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       foreach ($request->get('trans') as $key => $lang) {
           if (!$this->getLangApi($key)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       }
-
-        $trans_to_lang = new TranslationToLang();
-        $trans_to_lang->setTrans($request->get('trans'));
-
-        $transl = new Translation($trans_to_lang);
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+        $transl = new Translation();
         $transl->setCode($request->get('code'));
         $transl->setDomain($domain);
-
-        $entityManager = $this->get('doctrine.orm.entity_manager');
         $entityManager->persist($transl);
+
+        foreach ($request->get('trans') as $key => $trans) {
+            $trans_to_lang = new TranslationToLang();
+            $trans_to_lang->setTranslation($transl);
+            $trans_to_lang->setLang($entityManager->find(Lang::class, $key));
+            $trans_to_lang->setTrans($trans);
+            $transl->addTranslationToLang($trans_to_lang);
+            $entityManager->persist($trans_to_lang);
+        }
         $entityManager->flush();
 
         $trans = $request->get('trans');
-       foreach ($domain->getLangs() as $lang) {
-         if (!isset($trans[$lang->getCode()])) {
-           $trans[$lang->getCode()] = $request->get('code');
+         foreach ($domain->getLangs() as $lang) {
+           if (!isset($trans[$lang->getCode()])) {
+             $trans[$lang->getCode()] = $request->get('code');
+           }
          }
-       }
 
         $response = [
         "trans"=> $trans,
@@ -212,15 +204,8 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         }
         $entityManager->flush();
 
-        $trans = $request->get('trans');
-         foreach ($domain->getLangs() as $lang) {
-           if (!isset($trans[$lang->getCode()])) {
-             $trans[$lang->getCode()] = $translation->getCode();
-           }
-         }
-
         $response = [
-        "trans"=> $trans,
+        "trans"=> $translation->getVirtualLangs(),
         "id"=> $translation->getId(),
         "code"=> $translation->getCode()
         ];

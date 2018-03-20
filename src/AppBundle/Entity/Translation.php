@@ -107,4 +107,17 @@ class Translation
     {
         $this->translationToLang->removeElement($translationToLang);
     }
+
+    public function getVirtualLangs()
+   {
+       $res = [];
+       foreach ($this->getTranslationToLang() as $ttl) {
+           $res[$ttl->getLang()->getCode()] = $ttl->getTrans();
+       }
+       foreach ($this->getDomain()->getLangs() as $lang) {
+           if (!isset($res[$lang->getCode()]))
+               $res[$lang->getCode()] = $this->code;
+       }
+       return $res;
+   }
 }

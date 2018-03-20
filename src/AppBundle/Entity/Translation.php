@@ -21,7 +21,7 @@ class Translation
     protected $id;
 
     /**
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="SET NULL")
     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="translations")
      */
     protected $domain;
@@ -32,7 +32,7 @@ class Translation
     protected $code;
 
     /**
-    * @ORM\OneToMany(targetEntity="AppBundle\Entity\TranslationToLang", mappedBy="translation", cascade={"persist"})
+    * @ORM\OneToMany(targetEntity="AppBundle\Entity\TranslationToLang", mappedBy="translation", cascade={"remove"})
     */
    private $translationToLang;
 

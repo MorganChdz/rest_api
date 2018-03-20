@@ -220,6 +220,42 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         return $this->handleView($view);
   }
 
+/**
+    *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    *  @ParamConverter("translation", class="AppBundle:Translation", options={"repository_method" = "findOneById"})
+    */
+  public function deleteDomainTranslationAction($domain, Request $request, $translation)
+  {
+   if (!$request->headers->has('Authorization') && function_exists('apache_request_headers')) {
+        $all = apache_request_headers();
+        if (isset($all['Authorization'])) {
+            $request->headers->set('Authorization', $all['Authorization']);
+        }
+    }
+    $token = $request->headers->get('Authorization');
+    if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
+      if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+
+        $response = [
+          "id"=> $translation->getId(),
+        ];
+
+        $entityManager->remove($translation);
+        $entityManager->flush();
+
+        $data = array(
+        "code" => 200,
+        "message" => "success",
+        "datas" => $response
+        );
+
+        $view = $this->view($data, 200);
+        return $this->handleView($view);
+  }
+
+
     /**
     * @Route("/{slug}", name="donation.oldhomepage", requirements={"slug" = ".*.[^json]$"})
     */

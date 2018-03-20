@@ -69,7 +69,7 @@ class Domain
     * )
     */
    private $langs;
-   
+
     /**
     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Translation", mappedBy="domain")
     */

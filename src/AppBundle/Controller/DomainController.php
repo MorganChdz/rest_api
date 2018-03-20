@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest; // alias pour toutes les annotations
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Domain;
@@ -76,22 +78,42 @@ class DomainController extends FOSRestController
 
     /**
     *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    * @QueryParam(name="code", requirements="[a-z]+", default="", description="filter")
     */
-   public function getDomainTranslationsAction($domain)
+   public function getDomainTranslationsAction($domain, ParamFetcher $paramFetcher)
    {
-    if(count($domain->getTranslations())){
-       $res = array_map(function ($translation) {
-         return [
-          'trans' => $translation->getVirtualLangs(),
-          'id' => $translation->getId(),
-          'code' => $translation->getCode()
-        ];}, $domain->getTranslations()->toArray());
-     }
-      else {
-        $res= array(
-          'trans' => ['EN'=>'', 'FR'=>'', 'PL'=>'']
-        );
-      }
+      $code = $paramFetcher->get('code');
+
+      if($code != ""){
+        if(count($domain->getTranslations())){
+           $res = array_map(function ($translation) {
+             return [
+              'trans' => $translation->getVirtualLangs(),
+              'id' => $translation->getId(),
+              'code' => $translation->getCode()
+            ];}, $domain->getTranslationFilter($code));
+         }
+          else {
+            $res= array(
+              'trans' => ['EN'=>'', 'FR'=>'', 'PL'=>'']
+            );
+          }
+        }
+      if($code == ""){
+        if(count($domain->getTranslations())){
+           $res = array_map(function ($translation) {
+             return [
+              'trans' => $translation->getVirtualLangs(),
+              'id' => $translation->getId(),
+              'code' => $translation->getCode()
+            ];}, $domain->getTranslations()->toArray());
+         }
+          else {
+            $res= array(
+              'trans' => ['EN'=>'', 'FR'=>'', 'PL'=>'']
+            );
+          }
+        }
 
         $data = array(
            "code" => 200,
@@ -254,7 +276,6 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         $view = $this->view($data, 200);
         return $this->handleView($view);
   }
-
 
     /**
     * @Route("/{slug}", name="donation.oldhomepage", requirements={"slug" = ".*.[^json]$"})

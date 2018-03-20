@@ -223,4 +223,14 @@ class Domain
     {
         $this->translations->removeElement($translation);
     }
+
+    public function getTranslationFilter($filter)
+   {
+       $res = [];
+       foreach ($this->getTranslations() as $ttl) {
+            if(preg_match('#'. $filter .'#', $ttl->getCode()))
+                $res[] = $ttl;
+       }
+       return $res;
+   }
 }

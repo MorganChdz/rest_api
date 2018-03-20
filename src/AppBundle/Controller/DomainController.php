@@ -101,7 +101,7 @@ class DomainController extends FOSRestController
       }, $domain->getTranslations()->toArray());}
       else {
         $res= array(
-          'trans' => ['EN'=>'', 'FR'=>'']
+          'trans' => ['EN'=>'', 'FR'=>'', 'PL'=>'']
         );
       }
 
@@ -171,9 +171,10 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
 
   /**
     *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    *  @ParamConverter("translation", class="AppBundle:Translation", options={"repository_method" = "findOneById"})
     */
-   public function putDomainTranslationAction($domain, Request $request, $translation)
-   {
+  public function putDomainTranslationAction($domain, Request $request, $translation)
+  {
    if (!$request->headers->has('Authorization') && function_exists('apache_request_headers')) {
         $all = apache_request_headers();
         if (isset($all['Authorization'])) {
@@ -183,59 +184,45 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
     $token = $request->headers->get('Authorization');
     if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
       if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-      $form = $this->createForm(TranslationType::class, $request->request->all());
-      $form->submit($request->request->all());
-      if (count($form->getErrors()) || !$form->isValid()) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-      foreach ($request->get('trans') as $key => $lang) {
-          if (!$this->getLangApi($key)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+        $form = $this->createForm(TranslationType::class, $request->request->all());
+        $form->submit($request->request->all());
+        if (count($form->getErrors()) || !$form->isValid()) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+        foreach ($request->get('trans') as $key => $lang) {
+            if (!$this->getLangApi($key)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       }
 
-        $transl = $this->get('doctrine.orm.entity_manager')
-           ->getRepository('AppBundle:Translation')
-           ->findOneById($translation);
-
-
-        foreach ($transl->getTranslationToLang() as $value) {
-          $trans_to_lang = $value;
-        }
-        //$trans_to_lang->setTranslation($transl);
         $entityManager = $this->get('doctrine.orm.entity_manager');
-
-       foreach ($request->get('trans') as $key => $trans) {
-          if($trans_to_lang->getLang() === $entityManager->find(Lang::class, $key)){
-            $trans_to_lang->setLang($entityManager->find(Lang::class, $key));
+        foreach ($request->get('trans') as $key => $trans) {
+          $trans_to_lang = $this->get('doctrine.orm.entity_manager')
+                            ->getRepository(TranslationToLang::class)
+                            ->findOneBy([
+                              'translation' => $translation,
+                              'lang' => $entityManager->find(Lang::class, $key)]
+                            );
+          if ($trans_to_lang){
             $trans_to_lang->setTrans($trans);
-            $transl->addTranslationToLang($trans_to_lang);
           }
           else {
             $trans_to_lang = new TranslationToLang();
-            $trans_to_lang->setTranslation($transl);
+            $trans_to_lang->setTranslation($translation);
             $trans_to_lang->setLang($entityManager->find(Lang::class, $key));
             $trans_to_lang->setTrans($trans);
-            $transl->addTranslationToLang($trans_to_lang);
           }
-       }
-
-        $trans = array_map(function ($transTolang) {
-        return[
-            'lang' => $transTolang->getLang()->getCode(),
-           'trans' => $transTolang->getTrans()
-        ];
-       }, $transl->getTranslationToLang()->toArray());
-        $format = array();
-        foreach ($trans as $key => $value) {
-          foreach ($value as $key_a => $value_a) {
-            $format[$value['lang']] = $value_a;
-          }
+          $entityManager->persist($trans_to_lang);
         }
-
-        //$entityManager->merge($trans_to_lang);
         $entityManager->flush();
 
+        $trans = $request->get('trans');
+         foreach ($domain->getLangs() as $lang) {
+           if (!isset($trans[$lang->getCode()])) {
+             $trans[$lang->getCode()] = $translation->getCode();
+           }
+         }
+
         $response = [
-        "trans"=> $format,
-        "id"=> $transl->getId(),
-        "code"=> $transl->getCode()
+        "trans"=> $trans,
+        "id"=> $translation->getId(),
+        "code"=> $translation->getCode()
         ];
 
         $data = array(

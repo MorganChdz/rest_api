@@ -78,7 +78,7 @@ class DomainController extends FOSRestController
 
     /**
     *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
-    * @QueryParam(name="code", requirements="[a-z0-9]+", default="", description="filter")
+    * @QueryParam(name="code", requirements="[a-z0-9_-]+", default="", description="filter")
     */
    public function getDomainTranslationsAction($domain, ParamFetcher $paramFetcher)
    {

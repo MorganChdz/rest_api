@@ -16,6 +16,7 @@ use AppBundle\Entity\Lang;
 use AppBundle\Entity\Translation;
 use AppBundle\Entity\TranslationToLang;
 use AppBundle\Form\Type\TranslationType;
+use AppBundle\Form\Type\DomainType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\FOSRestController;
 
@@ -57,8 +58,12 @@ class DomainController extends FOSRestController
         }
     }
     $token = $request->headers->get('Authorization');
-    if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
-      if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+    $creator = ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername()];
+    if ($this-> getUserApi($token)){
+      if ($this-> getUserApi($token)->getId() == $domain->getUser()->getId()){
+        $creator = ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername(), 'email' => $domain->getUser()->getEmail()];
+      }
+    }
     $formatted_lang = [];
     if(count($domain->getLangs()))
     {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
@@ -70,7 +75,7 @@ class DomainController extends FOSRestController
            'slug' => $domain->getSlug(),
             'name' => $domain->getName(),
            'description' => $domain->getDescription(),
-           'creator' => ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername() ],
+           'creator' => $creator,
            'created_at'=> $domain->getCreatedAt()
         ];
 
@@ -189,6 +194,60 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
 
         $view = $this->view($data, 201);
         return $this->handleView($view);
+  }
+
+   public function postDomainAction(Request $request)
+   {
+   if (!$request->headers->has('Authorization') && function_exists('apache_request_headers')) {
+        $all = apache_request_headers();
+        if (isset($all['Authorization'])) {
+            $request->headers->set('Authorization', $all['Authorization']);
+        }
+    }
+    $token = $request->headers->get('Authorization');
+    if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
+      $form = $this->createForm(DomainType::class, $request->request->all());
+      $form->submit($request->request->all());
+      if (count($form->getErrors()) || !$form->isValid()) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+      foreach ($request->get('lang') as $lang) {
+          if (!$this->getLangApi($lang)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+      }
+        $entityManager = $this->get('doctrine.orm.entity_manager');
+        $dom = new Domain();
+        $dom->setName($request->get('name'));
+        $dom->setDescription($request->get('description'));
+        $dom->setUserId($this->getUserApi($token)->getId());
+        $dom->setUser($this->getUserApi($token));
+
+        foreach ($request->get('lang') as $lang) {
+            $dom->setLangs($this->getLangApi($lang));
+        }
+        $entityManager->persist($dom);
+        $entityManager->flush();
+
+        $formatted_lang = [];
+            if(count($dom->getLangs()))
+            {foreach ($dom->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}
+
+        $formatted = [];
+        $formatted = [
+          'langs' => $formatted_lang,
+           'id' => $dom->getId(),
+           'slug' => $dom->getSlug(),
+            'name' => $dom->getName(),
+           'description' => $dom->getDescription(),
+           'creator' => ['id' => $dom->getUser()->getId(), 'username' => $dom->getUser()->getUsername() ],
+           'created_at'=> $dom->getCreatedAt()
+        ];
+
+        $data = array(
+           "code" => 200,
+           "message" => "success",
+           "datas" => $formatted
+       );
+
+       $view = $this->view($data, 200);
+       return $this->handleView($view);
   }
 
   /**

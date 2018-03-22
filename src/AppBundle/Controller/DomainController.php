@@ -215,13 +215,16 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         $entityManager = $this->get('doctrine.orm.entity_manager');
         $dom = new Domain();
         $dom->setName($request->get('name'));
+        $dom->setSlug($request->get('name'));
+        $dom->onPrePersist();
         $dom->setDescription($request->get('description'));
         $dom->setUserId($this->getUserApi($token)->getId());
         $dom->setUser($this->getUserApi($token));
 
         foreach ($request->get('lang') as $lang) {
-            $dom->setLangs($this->getLangApi($lang));
+            $langs[] = $this->getLangApi($lang);
         }
+        $dom->setLangs($langs);
         $entityManager->persist($dom);
         $entityManager->flush();
 

@@ -233,4 +233,8 @@ class Domain
        }
        return $res;
    }
+      public function onPrePersist()
+    {
+        $this->createdAt = new \DateTime("now");
+    }
 }

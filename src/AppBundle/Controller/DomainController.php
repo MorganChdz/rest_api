@@ -48,9 +48,17 @@ class DomainController extends FOSRestController
     /**
     * @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
     */
-   public function getDomainAction($domain)
+   public function getDomainAction($domain, Request $request)
    {
-
+    if (!$request->headers->has('Authorization') && function_exists('apache_request_headers')) {
+        $all = apache_request_headers();
+        if (isset($all['Authorization'])) {
+            $request->headers->set('Authorization', $all['Authorization']);
+        }
+    }
+    $token = $request->headers->get('Authorization');
+    if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
+      if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
     $formatted_lang = [];
     if(count($domain->getLangs()))
     {foreach ($domain->getLangs() as $lang) {$formatted_lang[] = $lang->getCode(); }}

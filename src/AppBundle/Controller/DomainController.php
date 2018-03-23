@@ -217,7 +217,14 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         $entityManager = $this->get('doctrine.orm.entity_manager');
         $dom = new Domain();
         $dom->setName($request->get('name'));
-        $dom->setSlug($request->get('name'));
+        $slug = $this->get('doctrine.orm.entity_manager')
+                  ->getRepository(Domain::class)
+                  ->findOneBy([
+                    'slug' => $request->get('name')]
+                  );
+        if ($slug){
+           $dom->setSlug($request->get('name') . '1');
+          }
         $dom->onPrePersist();
         $dom->setDescription($request->get('description'));
         $dom->setUserId($this->getUserApi($token)->getId());

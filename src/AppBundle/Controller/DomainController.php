@@ -211,7 +211,9 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       if (count($form->getErrors()) || !$form->isValid()) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
       foreach ($request->get('lang') as $lang) {
           if (!$this->getLangApi($lang)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-      }
+          }
+            if ($request->get('name') == null || $request->get('name') == "") throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+          }
         $entityManager = $this->get('doctrine.orm.entity_manager');
         $dom = new Domain();
         $dom->setName($request->get('name'));
@@ -244,12 +246,12 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
         ];
 
         $data = array(
-           "code" => 200,
+           "code" => 201,
            "message" => "success",
            "datas" => $formatted
        );
 
-       $view = $this->view($data, 200);
+       $view = $this->view($data, 201);
        return $this->handleView($view);
   }
 

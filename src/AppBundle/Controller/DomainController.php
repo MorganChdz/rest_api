@@ -60,7 +60,7 @@ class DomainController extends FOSRestController
     $token = $request->headers->get('Authorization');
     $creator = ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername()];
     if ($this-> getUserApi($token)){
-      if ($this-> getUserApi($token)->getId() == $domain->getUser()->getId() || $token == $this-> getUserApi($token)->getPassword()){
+      if ($this-> getUserApi($token)->getId() == $domain->getUser()->getId()){
         $creator = ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername(), 'email' => $domain->getUser()->getEmail()];
       }
     }

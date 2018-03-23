@@ -241,7 +241,7 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
            'slug' => $dom->getSlug(),
             'name' => $dom->getName(),
            'description' => $dom->getDescription(),
-           'creator' => ['id' => $dom->getUser()->getId(), 'username' => $dom->getUser()->getUsername() ],
+           'creator' => ['id' => $dom->getUser()->getId(), 'username' => $dom->getUser()->getUsername(), 'email' => $dom->getUser()->getEmail()],
            'created_at'=> $dom->getCreatedAt()
         ];
 

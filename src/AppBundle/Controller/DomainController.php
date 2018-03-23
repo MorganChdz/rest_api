@@ -212,8 +212,8 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
       foreach ($request->get('lang') as $lang) {
           if (!$this->getLangApi($lang)) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
           }
-            if ($request->get('name') == "") throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-          }
+            if ($request->get('name') == null || $request->get('name') == "") throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
         $entityManager = $this->get('doctrine.orm.entity_manager');
         $dom = new Domain();
         $dom->setName($request->get('name'));

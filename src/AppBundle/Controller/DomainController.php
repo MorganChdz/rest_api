@@ -224,6 +224,8 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
                   );
         if ($slug){
            $dom->setSlug($request->get('name') . '1');
+          } else {
+             $dom->setSlug($request->get('name'));
           }
         $dom->onPrePersist();
         $dom->setDescription($request->get('description'));

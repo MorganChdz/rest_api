@@ -359,6 +359,59 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
   }
 
     /**
+    *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
+    *  @ParamConverter("lang", class="AppBundle:Lang", options={"repository_method" = "findOneByCode"})
+    */
+  public function deleteDomainLangsAction($domain, Request $request, $lang)
+  {
+   if (!$request->headers->has('Authorization') && function_exists('apache_request_headers')) {
+        $all = apache_request_headers();
+        if (isset($all['Authorization'])) {
+            $request->headers->set('Authorization', $all['Authorization']);
+        }
+    }
+    $token = $request->headers->get('Authorization');
+    if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
+      if ($this-> getUserApi($token)->getId() != $domain->getUser()->getId()) throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
+    $creator = ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername()];
+    if ($this-> getUserApi($token)){
+      if ($this-> getUserApi($token)->getId() == $domain->getUser()->getId()){
+        $creator = ['id' => $domain->getUser()->getId(), 'username' => $domain->getUser()->getUsername(), 'email' => $domain->getUser()->getEmail()];
+      }
+    }
+
+      $entityManager = $this->get('doctrine.orm.entity_manager');
+      $domain->removeLang($lang);
+      $entityManager->persist($domain);
+      $entityManager->flush();
+
+      $formatted_lang = [];
+      if(count($domain->getLangs()))
+      {foreach ($domain->getLangs() as $langs) {$formatted_lang[] = $langs->getCode(); }}
+
+       $formatted = [];
+        $formatted = [
+          'langs' => $formatted_lang,
+         'id' => $domain->getId(),
+         'slug' => $domain->getSlug(),
+          'name' => $domain->getName(),
+         'description' => $domain->getDescription(),
+         'creator' => $creator,
+         'created_at'=> $domain->getCreatedAt()
+      ];
+
+      $data = array(
+      "code" => 200,
+      "message" => "success",
+      "datas" => $formatted
+      );
+
+      $view = $this->view($data, 200);
+      return $this->handleView($view);
+  }
+
+    /**
     * @Route("/{slug}", name="donation.oldhomepage", requirements={"slug" = ".*.[^json]$"})
     */
    public function indexAction(Request $request, $slug)

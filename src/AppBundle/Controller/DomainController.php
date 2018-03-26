@@ -382,6 +382,19 @@ if (!$this-> getUserApi($token)) throw new \Symfony\Component\Security\Core\Exce
     }
 
       $entityManager = $this->get('doctrine.orm.entity_manager');
+
+      $trans = $this->get('doctrine.orm.entity_manager')
+          ->getRepository(Translation::class)
+          ->findOneBy(['domain' => $domain->getId()]);
+      $trans_to_lang = $this->get('doctrine.orm.entity_manager')
+          ->getRepository(TranslationToLang::class)
+          ->findOneBy(['translation' => $trans->getId(),
+                        'lang'=> $lang->getCode()]);
+
+      if ($trans_to_lang == NULL) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+      $entityManager->remove($trans_to_lang);
+      $entityManager->persist($trans);
       $domain->removeLang($lang);
       $entityManager->persist($domain);
       $entityManager->flush();

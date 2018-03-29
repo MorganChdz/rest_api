@@ -90,6 +90,78 @@ class DomainController extends FOSRestController
   }
 
     /**
+    * @QueryParam(name="page", requirements="[0-9]+", default="", description="filter1")
+    * @QueryParam(name="per_page", requirements="[0-9]+", default="1", description="filter2")
+    * @QueryParam(name="sort", requirements="(asc|desc)", default="asc", description="filter3")
+    */
+   public function getLangsAction(ParamFetcher $paramFetcher)
+   {
+      $page = $paramFetcher->get('page');
+      $per_page = $paramFetcher->get('per_page');
+      $sort = $paramFetcher->get('sort');
+      $langs = $this->get('doctrine.orm.entity_manager')
+                   ->getRepository('AppBundle:Lang')
+                   ->findAll();
+      if (count($langs) < $per_page || $per_page < 0 ) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+      $formatted = array();
+      $res = [];
+      $list_pages = array();
+      foreach ($langs as $lang) {
+        $formatted[] = $lang->getCode();
+      }
+
+      if($page != ""){
+        $count = 0;
+        for ($j=0; $j < $page ; $j++) {
+          if($per_page != "" && $per_page != "1"){
+            for ($i=$count * $per_page; $i < $per_page + $count + $j; $i++) {
+              if($i < count($langs))
+              array_push($res, $formatted[$i]);
+            }
+            $count++;
+          } else if($per_page == "1"){
+            for ($i=$count; $i < $per_page + $count; $i++) {
+              if($i < count($langs))
+              array_push($res, $formatted[$i]);
+            }
+            $count++;
+          }
+          array_push($list_pages, $res);
+          $res = array();
+        }
+      }
+
+      if ($page > 0 && $page!=""){
+        $ret = $list_pages[$page - 1];
+        if($sort =="asc"){
+          asort($ret);
+        } else if($sort == "desc") {
+          rsort($ret);
+        }
+      }
+      else {
+        $ret = array();
+        foreach ($formatted as $tab) {
+          $ret[]= $tab;
+        }
+        if($sort =="asc"){
+          asort($ret);
+        } else if($sort == "desc") {
+          rsort($ret);
+        }
+      }
+
+     $data = array(
+          "code" => 200,
+          "message" => "success",
+          "datas" => $ret
+      );
+      $view = $this->view($data, 200);
+      return $this->handleView($view);
+  }
+
+    /**
     *  @ParamConverter("domain", class="AppBundle:Domain", options={"repository_method" = "findOneBySlug"})
     * @QueryParam(name="code", requirements="[a-z0-9_-]+", default="", description="filter")
     */

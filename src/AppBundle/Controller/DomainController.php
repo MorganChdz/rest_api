@@ -90,19 +90,22 @@ class DomainController extends FOSRestController
   }
 
     /**
-    * @QueryParam(name="page", requirements="[0-9]+", default="", description="filter1")
-    * @QueryParam(name="per_page", requirements="[0-9]+", default="1", description="filter2")
+    * @QueryParam(name="page", requirements="[a-z0-9_-]+", default="", description="filter1")
+    * @QueryParam(name="per_page", requirements="[0-9]+", default="", description="filter2")
     * @QueryParam(name="sort", requirements="(asc|desc)", default="asc", description="filter3")
     */
    public function getLangsAction(ParamFetcher $paramFetcher)
    {
       $page = $paramFetcher->get('page');
+      var_dump($page);
       $per_page = $paramFetcher->get('per_page');
       $sort = $paramFetcher->get('sort');
       $langs = $this->get('doctrine.orm.entity_manager')
                    ->getRepository('AppBundle:Lang')
                    ->findAll();
       if (count($langs) < $per_page || $per_page < 0 ) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+            if ( preg_match("#[a-z\-]#", $page) ) throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
 
       $formatted = array();
       $res = [];

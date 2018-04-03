@@ -97,7 +97,7 @@ class DomainController extends FOSRestController
    public function getLangsAction(ParamFetcher $paramFetcher)
    {
       $page = $paramFetcher->get('page');
-      var_dump($page);
+      //var_dump($page);
       $per_page = $paramFetcher->get('per_page');
       $sort = $paramFetcher->get('sort');
       $langs = $this->get('doctrine.orm.entity_manager')
